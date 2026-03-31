@@ -1,0 +1,183 @@
+{
+  "name": "Bryan Kim",
+  "title": "Assistant Professor",
+  "institution": "Texas A&M University",
+  "college": "College of Performance, Visualization, & Fine Arts",
+  "department": "Technical Art and Interactive Media — Game Design",
+  "email": "bryankim@tamu.edu",
+  "tags": ["Game Design", "Digital Therapeutics", "Interactive Media", "HCI", "XR/VR"],
+  "bio": "Assistant Professor at Texas A&M University researching the intersection of game design, health, and interactive technology. My work focuses on making games that heal, teach, and connect people — from VR digital therapeutics for stroke patients to mobile games that help children with autism build social skills. I believe play is one of the most powerful tools we have for human wellbeing.",
+  "education": [
+    {
+      "degree": "Doctor of Philosophy",
+      "field": "Critical Game Design",
+      "school": "Rensselaer Polytechnic Institute",
+      "year": "2025"
+    },
+    {
+      "degree": "Masters of Entertainment Technology",
+      "field": "Entertainment Technology Center",
+      "school": "Carnegie Mellon University",
+      "year": "2019"
+    },
+    {
+      "degree": "Bachelor of Science",
+      "field": "Computer Graphics Technology",
+      "school": "Purdue University",
+      "year": "2015"
+    }
+  ],
+  "funFact": "I believe the best games are the ones where you forget you're learning. This website is my proof of concept — you're playing one right now.",
+  "lab": {
+    "name": "TAMU Game Lab",
+    "description": "A research lab exploring the intersection of game design, health, and interactive technology. We build games that serve as therapeutic tools, educational platforms, and vehicles for social good.",
+    "focusAreas": [
+      "Health games & digital therapeutics",
+      "Game-driven social skills training",
+      "VR/AR therapeutic applications",
+      "Serious game design frameworks"
+    ],
+    "openCall": "Looking for motivated students passionate about using games to improve lives. If you believe play can be medicine, let's talk."
+  },
+  "projects": [
+    {
+      "title": "Fortnite Battle Royale",
+      "org": "Epic Games",
+      "role": "Producer",
+      "year": "2019",
+      "category": "industry",
+      "description": "Production on one of the world's largest live-service games.",
+      "detail": "Shipped Fishing, Harpoon Gun, Swimming, Motorboat, Lightsabers, and the Star Wars live event. Coordinated daily company-wide playtests with 100+ testers across Chapter 2 Season 1 and Season X. Also produced Batarang, Bat Grappler, and Taco Time.",
+      "link": ""
+    },
+    {
+      "title": "MeDKit",
+      "org": "Health Game Startup",
+      "role": "Founder & CEO",
+      "year": "2020–present",
+      "category": "startup",
+      "description": "A health game startup building digital therapeutics through play.",
+      "detail": "Secured $210K investment. Built five games: Eye Rehab (VR for visual deficits), Emotion Adventure (ASD social skills, 50+ downloads), LunchLaunch (educational shooter), HayStackToe (cross-platform party game), and Double Walker (AR self-care).",
+      "link": ""
+    },
+    {
+      "title": "Eye Rehab",
+      "org": "MeDKit",
+      "role": "Lead Developer",
+      "year": "2023",
+      "category": "research",
+      "description": "VR digital therapeutics for stroke-related visual deficits.",
+      "detail": "Incorporated eye-tracking technology in VR to engage patients in therapeutic exercises. Successfully completed IRB-approved clinical testing with two cases. A clinically effective approach to visual rehabilitation.",
+      "link": ""
+    },
+    {
+      "title": "Emotion Adventure",
+      "org": "MeDKit",
+      "role": "Lead Designer",
+      "year": "2023",
+      "category": "research",
+      "description": "Mobile game for ASD children — emotion and social skills training.",
+      "detail": "Designed to enhance cognitive, social, and emotion-situation recognition for children with Autism Spectrum Disorder. 50+ downloads from families and clinicians. Combines game mechanics with evidence-based therapeutic goals.",
+      "link": ""
+    },
+    {
+      "title": "Burnt Onion Studio",
+      "org": "Carnegie Mellon University",
+      "role": "Producer",
+      "year": "2019",
+      "category": "academic",
+      "description": "Year-long game development project modeled on AAA studio practices.",
+      "detail": "Developed a full pre-production package. Facilitated Scrum, daily stand-ups, and supplied designers and artists with resources to independently solve production challenges. A masterclass in team-scale game production.",
+      "link": ""
+    },
+    {
+      "title": "Pupil",
+      "org": "Carnegie Mellon University",
+      "role": "Designer & Prototyper",
+      "year": "2018",
+      "category": "academic",
+      "description": "AR applications for enhancing classroom learning experiences.",
+      "detail": "Designed and prototyped augmented reality tools for education. Playtested with five schools, resulting in impactful enhancements and international recognition for AR classroom innovation.",
+      "link": ""
+    },
+    {
+      "title": "NEO",
+      "org": "Carnegie Mellon University + Princeton",
+      "role": "Multi-role (Designer, Artist, Tester)",
+      "year": "2018",
+      "category": "academic",
+      "description": "Online crowd-sourcing PC game for mapping neural networks.",
+      "detail": "Collaborated with Princeton University. Adapted to multiple roles — level designer, interaction designer, 3D artist, 2D artist. Playtested with 200 players to refine the design.",
+      "link": ""
+    }
+  ],
+  "publications": [
+    {
+      "venue": "Meaningful Play 2024",
+      "year": "2024",
+      "title": "Game Mechanics and Aesthetics Design Framework in Digital Therapeutics for Stroke-related Visual Impairment",
+      "authors": "Bryan Kim; Ye Chan Kim; Hyun Jin Shin; Jee-in Kim",
+      "award": "",
+      "plainEnglish": "We created a reusable blueprint for designing therapeutic games, tested on stroke patients with vision problems. A framework other designers can follow.",
+      "doi": ""
+    },
+    {
+      "venue": "ACM GoodIT 2023",
+      "year": "2023",
+      "title": "Game-Driven Practices for Social Skills: Exploring Usability for Children with Autism Spectrum Disorder",
+      "authors": "Bryan Kim; Et al.",
+      "award": "Best WIP Paper Award",
+      "plainEnglish": "Can games teach kids with autism to navigate social situations? We built one and tested whether children could actually use it effectively.",
+      "doi": ""
+    },
+    {
+      "venue": "IEEE GEM 2022",
+      "year": "2022",
+      "title": "Using Selective Simulation to Create Digital Therapeutics for Educating Social Skills to Children with High-Functioning ASD",
+      "authors": "Bryan Kim",
+      "award": "",
+      "plainEnglish": "Instead of simulating everything, we picked the specific social moments that matter most and gamified just those — making therapy more focused and effective.",
+      "doi": ""
+    },
+    {
+      "venue": "ICCT 2022",
+      "year": "2022",
+      "title": "ASDCLAIMS: Twitter Dataset of Claims on Autism Spectrum Disorder",
+      "authors": "Michelle Kim; Bryan Kim; Jung Hwan Kim; Jee-In Kim",
+      "award": "",
+      "plainEnglish": "We analyzed how people talk about autism on social media, building a dataset to help researchers understand public perceptions and misinformation.",
+      "doi": ""
+    },
+    {
+      "venue": "CHI PLAY 2019",
+      "year": "2019",
+      "title": "Game With A Purpose To Collect Home Audio Data",
+      "authors": "Bryan Kim; Yi Cheng; Zixuan Li; Ruoxi Li; Chenchen Tan; Shuo Wang; Yifeng Shi; Jessica Hammer",
+      "award": "",
+      "plainEnglish": "We turned boring audio data collection into a game people actually wanted to play. Citizen science meets game design.",
+      "doi": ""
+    },
+    {
+      "venue": "DKOU 2017",
+      "year": "2017",
+      "title": "MRI-based 3D Simulation of Transtrochanteric Anterior Rotational Osteotomy for Osteonecrosis of Femoral Head",
+      "authors": "Jun-Young Kim; Jaeyeong Park; Bryan Kim; et al.",
+      "award": "",
+      "plainEnglish": "We used 3D modeling from MRI scans to simulate a complex hip surgery before it happened — helping surgeons plan better operations.",
+      "doi": ""
+    }
+  ],
+  "awards": [
+    "Founders Award of Excellence — 29th Annual Honors Convocation (2023)",
+    "1st Place — Class of '51 Entrepreneurship Awards (2023)",
+    "2nd Place — RPI Business Model Competition (2023)",
+    "Rensselaer Graduate Fellowship Award (2021)",
+    "K-Unicorn Academy — Korea SMEs and Startups Agency (2021)"
+  ],
+  "stageLabels": {
+    "stranger": "You've just arrived",
+    "acquaintance": "You're getting to know Bryan",
+    "colleague": "You understand Bryan's work",
+    "collaborator": "You really get what drives Bryan"
+  }
+}

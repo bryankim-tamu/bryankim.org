@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryan Kim — Assistant Professor, Texas A&M University</title>
+<meta name="description" content="Bryan Kim — Assistant Professor at Texas A&M University. Game Design, Digital Therapeutics, Interactive Media.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #999;
+  --accent-soft: rgba(153,153,153,0.06);
+  --accent-border: rgba(153,153,153,0.15);
+  --accent-text: #777;
+  --bg: #fafaf8;
+  --bg-card: #fff;
+  --text: #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-tertiary: #aaa;
+  --border: rgba(0,0,0,0.06);
+  --font: 'DM Sans', -apple-system, sans-serif;
+  --mono: 'DM Mono', monospace;
+  --radius: 10px;
+  --stage: 0;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+body {
+  min-height: 100vh;
+  transition: background 1.2s ease;
+}
+
+/* --- PROGRESS BAR (sticky top) --- */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 24px;
+  background: rgba(250,250,248,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 1.2s ease, background 1.2s ease;
+}
+
+.progress-bar.has-border {
+  border-bottom-color: var(--border);
+}
+
+.stage-text {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  transition: color 1.2s ease;
+  min-width: 0;
+}
+
+.stage-text.visible {
+  color: var(--accent-text);
+}
+
+.xp-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(0,0,0,0.04);
+  border-radius: 2px;
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.xp-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 2px;
+  background: var(--accent);
+  transition: width 0.6s ease, background 1.2s ease;
+}
+
+.stage-label {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  transition: color 1.2s ease;
+  letter-spacing: 0.5px;
+}
+
+.stage-label.visible {
+  color: var(--accent-text);
+}
+
+.customize-btn {
+  font-size: 12px;
+  font-family: var(--font);
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.customize-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.customize-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+/* --- NAV --- */
+nav {
+  position: fixed;
+  top: 52px; left: 0; right: 0;
+  z-index: 99;
+  display: flex;
+  gap: 4px;
+  padding: 8px 24px;
+  background: rgba(250,250,248,0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+nav.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+nav a {
+  font-size: 12px;
+  padding: 4px 12px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  border-radius: 5px;
+  transition: all 0.3s;
+}
+
+nav a:hover {
+  color: var(--text);
+  background: rgba(0,0,0,0.03);
+}
+
+/* --- TOAST --- */
+.toast-container {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 101;
+}
+
+.toast {
+  padding: 8px 20px;
+  font-size: 13px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  opacity: 0;
+  transform: translateY(-12px);
+  transition: all 0.4s ease;
+  white-space: nowrap;
+  color: var(--accent-text);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- MAIN CONTENT --- */
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 120px 24px 80px;
+}
+
+/* --- SECTIONS --- */
+.section {
+  padding: 48px 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color 1.2s ease;
+}
+
+.section.has-border {
+  border-bottom-color: var(--border);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section-label {
+  font-size: 11px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  color: transparent;
+  transition: color 1.2s ease;
+}
+
+.section-label.visible {
+  color: var(--accent-text);
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.section-body {
+  font-size: 15px;
+  color: var(--text-secondary);
+  max-width: 580px;
+}
+
+/* --- BONUS CONTENT --- */
+.bonus {
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  border: 1px dashed transparent;
+  background: transparent;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+.bonus.revealed {
+  max-height: 200px;
+  opacity: 1;
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+}
+
+.bonus-label {
+  font-size: 10px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent-text);
+  margin-bottom: 6px;
+}
+
+.bonus-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* --- TAGS --- */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.tag {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 5px;
+  background: rgba(0,0,0,0.03);
+  color: var(--text-secondary);
+  transition: all 1.2s ease;
+}
+
+.tag.colored {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+/* --- EDUCATION --- */
+.edu-list {
+  margin-top: 16px;
+}
+
+.edu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  font-size: 14px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 1.2s ease;
+}
+
+.edu-item.has-border {
+  border-bottom-color: var(--border);
+}
+
+.edu-item:last-child { border-bottom: none; }
+
+.edu-degree {
+  font-weight: 500;
+}
+
+.edu-school {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.edu-year {
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--text-tertiary);
+}
+
+/* --- LAB FOCUS --- */
+.focus-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.focus-item {
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding-left: 16px;
+  position: relative;
+}
+
+.focus-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.focus-item.has-dot::before {
+  opacity: 0.5;
+}
+
+/* --- PROJECT CARDS --- */
+.project-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (max-width: 540px) {
+  .project-grid { grid-template-columns: 1fr; }
+}
+
+.project-card {
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.8s ease;
+  user-select: none;
+}
+
+.project-card.styled {
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+}
+
+.project-card:hover {
+  transform: translateY(-1px);
+}
+
+.project-card.expanded {
+  border-color: var(--accent);
+}
+
+.pc-category {
+  font-size: 10px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  margin-bottom: 4px;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.pc-category.visible { opacity: 1; }
+
+.pc-title {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.pc-org {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.pc-detail {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+
+.pc-detail.open {
+  max-height: 200px;
+  opacity: 1;
+}
+
+.pc-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--accent-text);
+  text-decoration: none;
+  font-family: var(--mono);
+}
+
+.pc-link:hover { text-decoration: underline; }
+
+/* --- PUBLICATIONS --- */
+.pub-list {
+  margin-top: 16px;
+}
+
+.pub-item {
+  padding: 14px 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color 1.2s ease;
+  cursor: default;
+}
+
+.pub-item.has-border {
+  border-bottom-color: var(--border);
+}
+
+.pub-item:last-child { border-bottom: none; }
+
+.pub-venue {
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--accent-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pub-award {
+  font-size: 10px;
+  padding: 2px 8px;
+  background: rgba(40,140,80,0.08);
+  color: #28633a;
+  border-radius: 4px;
+  font-family: var(--font);
+}
+
+.pub-title {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.pub-authors {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.pub-plain {
+  font-size: 13px;
+  color: var(--accent-text);
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: var(--accent-soft);
+  border-radius: 6px;
+  line-height: 1.5;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.6s ease;
+}
+
+.pub-plain.revealed {
+  max-height: 100px;
+  opacity: 1;
+}
+
+.pub-doi {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--accent-text);
+  text-decoration: none;
+  font-family: var(--mono);
+}
+
+.pub-doi:hover { text-decoration: underline; }
+
+/* --- AWARDS --- */
+.awards-list {
+  margin-top: 12px;
+}
+
+.award-item {
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 6px 0;
+}
+
+/* --- CONTACT --- */
+.contact-email {
+  font-size: 18px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.contact-email:hover { color: var(--accent-text); }
+
+.contact-links {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.contact-link {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.contact-link:hover {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+/* --- BREATHING CIRCLE --- */
+.breathing {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s ease;
+}
+
+.breathing.visible {
+  opacity: 0.25;
+  animation: breathe 19s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%   { transform: scale(0.6); opacity: 0.15; }
+  21%  { transform: scale(1.0); opacity: 0.35; }
+  58%  { transform: scale(1.0); opacity: 0.35; }
+  100% { transform: scale(0.6); opacity: 0.15; }
+}
+
+/* --- PARTICLES --- */
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+.particles.visible { opacity: 1; }
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: float-up linear infinite;
+}
+
+@keyframes float-up {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  15%  { opacity: 0.3; }
+  85%  { opacity: 0.3; }
+  100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
+}
+
+/* --- MINI GAME --- */
+.minigame-section {
+  margin-top: 40px;
+  padding: 32px 0;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 1s ease;
+}
+
+.minigame-section.visible {
+  opacity: 1;
+  max-height: 600px;
+  overflow: visible;
+}
+
+.game-intro {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.sort-game {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sort-bucket {
+  flex: 1;
+  min-width: 140px;
+  padding: 12px;
+  border: 2px dashed var(--accent-border);
+  border-radius: var(--radius);
+  min-height: 120px;
+  transition: all 0.3s;
+}
+
+.sort-bucket.drag-over {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.bucket-label {
+  font-size: 11px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent-text);
+  margin-bottom: 8px;
+}
+
+.sort-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.sort-tile {
+  font-size: 12px;
+  padding: 6px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  cursor: grab;
+  user-select: none;
+  transition: all 0.3s;
+  color: var(--text);
+}
+
+.sort-tile:active { cursor: grabbing; }
+
+.sort-tile.placed {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  cursor: default;
+}
+
+.sort-tile.wrong {
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.game-complete {
+  font-size: 14px;
+  color: var(--accent-text);
+  margin-top: 12px;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.game-complete.show { opacity: 1; }
+
+/* --- CUSTOMIZE PANEL --- */
+.customize-panel {
+  position: fixed;
+  top: 52px;
+  right: 0;
+  width: 260px;
+  max-height: calc(100vh - 52px);
+  overflow-y: auto;
+  z-index: 98;
+  padding: 20px;
+  background: var(--bg-card);
+  border-left: 1px solid var(--border);
+  box-shadow: -4px 0 24px rgba(0,0,0,0.04);
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+}
+
+.customize-panel.open {
+  transform: translateX(0);
+}
+
+.panel-title {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.panel-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  margin-bottom: 6px;
+  transition: all 0.3s;
+}
+
+.theme-option:hover {
+  border-color: var(--accent-border);
+}
+
+.theme-option.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.theme-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.theme-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.theme-desc {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* --- FOOTER --- */
+footer {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+footer a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+footer a:hover { text-decoration: underline; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 640px) {
+  .progress-bar { padding: 0 14px; gap: 8px; }
+  .stage-text { font-size: 11px; }
+  main { padding: 100px 16px 60px; }
+  .section { padding: 32px 0; }
+  .section-title { font-size: 22px; }
+  nav { padding: 6px 14px; }
+  .customize-panel { width: 100%; }
+  .breathing { bottom: 16px; right: 16px; width: 32px; height: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <span class="stage-text" id="stageText">You've just arrived</span>
+  <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+  <span class="stage-label" id="stageLabel">stranger</span>
+  <button class="customize-btn" id="customizeBtn" onclick="togglePanel()">Make it yours</button>
+</div>
+
+<!-- Nav -->
+<nav id="nav">
+  <a href="#about">About</a>
+  <a href="#lab">Lab</a>
+  <a href="#projects">Projects</a>
+  <a href="#publications">Publications</a>
+  <a href="#cv">CV</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<!-- Toast -->
+<div class="toast-container"><div class="toast" id="toast"></div></div>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Breathing circle -->
+<div class="breathing" id="breathing"></div>
+
+<!-- Customize Panel -->
+<div class="customize-panel" id="customizePanel">
+  <div class="panel-title">Make it yours</div>
+  <div class="panel-subtitle">You know Bryan well enough now. Choose how this space feels to you.</div>
+  <div id="themeOptions"></div>
+</div>
+
+<main>
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="section-label" id="label-about">About</div>
+    <div class="section-title" id="heroName">Bryan Kim</div>
+    <div id="heroSubtitle" style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;"></div>
+    <div class="section-body" id="bioText"></div>
+    <div class="tags" id="tagsContainer"></div>
+    <div class="edu-list" id="eduList"></div>
+    <div class="bonus" id="bonus-funfact">
+      <div class="bonus-label">A note from Bryan</div>
+      <div class="bonus-text" id="funFactText"></div>
+    </div>
+  </section>
+
+  <!-- LAB -->
+  <section class="section" id="lab">
+    <div class="section-label" id="label-lab">Research lab</div>
+    <div class="section-title" id="labName"></div>
+    <div class="section-body" id="labDesc"></div>
+    <div class="focus-list" id="focusList"></div>
+    <div class="bonus" id="bonus-lab">
+      <div class="bonus-label">Open call</div>
+      <div class="bonus-text" id="labOpenCall"></div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="section" id="projects">
+    <div class="section-label" id="label-projects">Selected work</div>
+    <div class="section-title">Projects</div>
+    <div class="section-body">Games, startups, research prototypes, and production work spanning industry and academia.</div>
+    <div class="project-grid" id="projectGrid"></div>
+    <div class="bonus" id="bonus-projects">
+      <div class="bonus-label">Behind the scenes</div>
+      <div class="bonus-text">Project cards now show insider details. Click any card above to reveal the full story.</div>
+    </div>
+  </section>
+
+  <!-- PUBLICATIONS -->
+  <section class="section" id="publications">
+    <div class="section-label" id="label-publications">Research</div>
+    <div class="section-title">Publications</div>
+    <div class="pub-list" id="pubList"></div>
+    <div class="bonus" id="bonus-pubs">
+      <div class="bonus-label">In plain English</div>
+      <div class="bonus-text">Each paper now shows a plain-language summary. Scroll up to read what they really mean.</div>
+    </div>
+  </section>
+
+  <!-- CV -->
+  <section class="section" id="cv">
+    <div class="section-label" id="label-cv">Curriculum vitae</div>
+    <div class="section-title">Awards & Grants</div>
+    <div class="awards-list" id="awardsList"></div>
+    <div style="margin-top:20px;">
+      <a href="cv.pdf" target="_blank" class="contact-link" style="display:inline-block;">Download full CV (PDF)</a>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact">
+    <div class="section-label" id="label-contact">Get in touch</div>
+    <div class="section-title">Contact</div>
+    <a class="contact-email" id="contactEmail" href=""></a>
+    <div id="contactAddress" style="font-size:14px;color:var(--text-secondary);margin-top:8px;"></div>
+    <div class="contact-links" id="contactLinks">
+      <a class="contact-link" href="https://linkedin.com" target="_blank">LinkedIn</a>
+      <a class="contact-link" href="https://scholar.google.com" target="_blank">Google Scholar</a>
+    </div>
+    <div class="bonus" id="bonus-contact">
+      <div class="bonus-label">Thank you</div>
+      <div class="bonus-text">You've fully explored this site. You now know Bryan better than most colleagues do. If anything here resonated, he'd love to hear from you.</div>
+    </div>
+  </section>
+
+  <!-- MINI GAME -->
+  <div class="minigame-section" id="minigameSection">
+    <div class="section-label visible" style="color:var(--accent-text);">Bonus</div>
+    <div class="section-title">Sort Bryan's world</div>
+    <div class="game-intro">A small, meditative sorting game. Drag each tile into the right category. No timer, no pressure — just the satisfaction of putting things in their place.</div>
+    <div class="sort-pool" id="sortPool"></div>
+    <div class="sort-game" id="sortGame"></div>
+    <div class="game-complete" id="gameComplete">Everything in its place. Thank you for playing.</div>
+  </div>
+</main>
+
+<footer>
+  <p>This website is a proof of concept in therapeutic game design.</p>
+  <p style="margin-top:4px;">Built with care. No frameworks were harmed.</p>
+</footer>
+
+<script>
+/* ============================================
+   DATA LOADING & RENDERING
+   ============================================ */
+let DATA = null;
+
+async function loadData() {
+  try {
+    const res = await fetch('data.json');
+    DATA = await res.json();
+    render();
+  } catch(e) {
+    // Fallback: data might be embedded or unavailable
+    console.log('data.json not found, using embedded fallback');
+  }
+}
+
+function render() {
+  if (!DATA) return;
+  const d = DATA;
+
+  // Header
+  document.getElementById('heroName').textContent = d.name;
+  document.getElementById('heroSubtitle').textContent =
+    d.title + ' — ' + d.institution + '\n' + d.department;
+  document.getElementById('bioText').textContent = d.bio;
+  document.getElementById('funFactText').textContent = d.funFact;
+
+  // Tags
+  const tagsEl = document.getElementById('tagsContainer');
+  d.tags.forEach(t => {
+    const span = document.createElement('span');
+    span.className = 'tag';
+    span.textContent = t;
+    tagsEl.appendChild(span);
+  });
+
+  // Education
+  const eduEl = document.getElementById('eduList');
+  d.education.forEach(e => {
+    const div = document.createElement('div');
+    div.className = 'edu-item';
+    div.innerHTML = '<div><span class="edu-degree">' + e.degree + '</span> — <span class="edu-school">' + e.school + '</span></div><span class="edu-year">' + e.year + '</span>';
+    eduEl.appendChild(div);
+  });
+
+  // Lab
+  document.getElementById('labName').textContent = d.lab.name;
+  document.getElementById('labDesc').textContent = d.lab.description;
+  document.getElementById('labOpenCall').textContent = d.lab.openCall;
+  const focusEl = document.getElementById('focusList');
+  d.lab.focusAreas.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'focus-item';
+    div.textContent = f;
+    focusEl.appendChild(div);
+  });
+
+  // Projects
+  const gridEl = document.getElementById('projectGrid');
+  d.projects.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    card.setAttribute('data-idx', i);
+    card.onclick = () => toggleCard(i);
+    let html = '<div class="pc-category">' + p.category + '</div>';
+    html += '<div class="pc-title">' + p.title + '</div>';
+    html += '<div class="pc-org">' + p.org + ' — ' + p.role + '</div>';
+    html += '<div class="pc-detail" id="pcdet-' + i + '">' + p.detail;
+    if (p.link) {
+      html += '<br><a class="pc-link" href="' + p.link + '" target="_blank" onclick="event.stopPropagation();earnPoints(5);">View project &rarr;</a>';
+    }
+    html += '</div>';
+    card.innerHTML = html;
+    gridEl.appendChild(card);
+  });
+
+  // Publications
+  const pubEl = document.getElementById('pubList');
+  d.publications.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'pub-item';
+    let html = '<div class="pub-venue">' + p.venue;
+    if (p.award) html += ' <span class="pub-award">' + p.award + '</span>';
+    html += '</div>';
+    html += '<div class="pub-title">' + p.title + '</div>';
+    html += '<div class="pub-authors">' + p.authors + '</div>';
+    html += '<div class="pub-plain" id="pubplain-' + i + '">' + p.plainEnglish + '</div>';
+    if (p.doi) {
+      html += '<a class="pub-doi" href="' + p.doi + '" target="_blank" onclick="earnPoints(5);">DOI &rarr;</a>';
+    }
+    div.innerHTML = html;
+    pubEl.appendChild(div);
+  });
+
+  // Awards
+  const awardsEl = document.getElementById('awardsList');
+  d.awards.forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'award-item';
+    div.textContent = a;
+    awardsEl.appendChild(div);
+  });
+
+  // Contact
+  document.getElementById('contactEmail').textContent = d.email;
+  document.getElementById('contactEmail').href = 'mailto:' + d.email;
+  document.getElementById('contactAddress').textContent = d.institution + ' — ' + d.college;
+
+  // Initialize game
+  initSortGame();
+}
+
+/* ============================================
+   PROGRESSION SYSTEM
+   ============================================ */
+let points = 0;
+let stage = 0; // 0=stranger, 1=acquaintance, 2=colleague, 3=collaborator
+const STAGE_THRESHOLDS = [0, 80, 200, 350];
+const STAGE_NAMES = ['stranger', 'acquaintance', 'colleague', 'collaborator'];
+const cardClicked = new Set();
+let toastTimer = null;
+let lastScrollY = 0;
+let scrollSpeed = 0;
+let scrollSpeedSamples = [];
+
+const themes = [
+  { id:'maroon', name:'TAMU Maroon', desc:'School colors', color:'#500000', soft:'rgba(80,0,0,0.05)', border:'rgba(80,0,0,0.12)', text:'#6b1a1a' },
+  { id:'ocean',  name:'Ocean Blue',  desc:'Calm waters',  color:'#185FA5', soft:'rgba(24,95,165,0.05)', border:'rgba(24,95,165,0.12)', text:'#185FA5' },
+  { id:'forest', name:'Forest Teal', desc:'Deep woods',   color:'#0F6E56', soft:'rgba(15,110,86,0.05)', border:'rgba(15,110,86,0.12)', text:'#0F6E56' },
+  { id:'sunset', name:'Sunset Coral',desc:'Warm glow',    color:'#B85430', soft:'rgba(184,84,48,0.05)', border:'rgba(184,84,48,0.12)', text:'#96421f' },
+  { id:'night',  name:'Night Mode',  desc:'Easy on eyes', color:'#444', soft:'rgba(68,68,68,0.06)', border:'rgba(68,68,68,0.15)', text:'#555' }
+];
+
+function earnPoints(n) {
+  points += n;
+  updateProgression();
+}
+
+function updateProgression() {
+  // Determine stage
+  let newStage = 0;
+  for (let i = STAGE_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (points >= STAGE_THRESHOLDS[i]) { newStage = i; break; }
+  }
+
+  if (newStage !== stage) {
+    stage = newStage;
+    applyStage();
+    showToast(DATA ? DATA.stageLabels[STAGE_NAMES[stage]] : STAGE_NAMES[stage]);
+  }
+
+  // Update XP bar
+  const maxPts = STAGE_THRESHOLDS[STAGE_THRESHOLDS.length - 1];
+  const pct = Math.min(100, (points / maxPts) * 100);
+  document.getElementById('xpFill').style.width = pct + '%';
+  document.getElementById('stageLabel').textContent = STAGE_NAMES[stage];
+
+  // Update stage text
+  if (DATA) {
+    document.getElementById('stageText').textContent =
+      DATA.stageLabels[STAGE_NAMES[stage]];
+  }
+}
+
+function applyStage() {
+  const sections = document.querySelectorAll('.section');
+  const labels = document.querySelectorAll('.section-label');
+  const cards = document.querySelectorAll('.project-card');
+  const tags = document.querySelectorAll('.tag');
+  const eduItems = document.querySelectorAll('.edu-item');
+  const pubItems = document.querySelectorAll('.pub-item');
+  const focusItems = document.querySelectorAll('.focus-item');
+  const categories = document.querySelectorAll('.pc-category');
+
+  // Stage 1: Acquaintance — lines & labels
+  if (stage >= 1) {
+    document.getElementById('progressBar').classList.add('has-border');
+    document.getElementById('nav').classList.add('visible');
+    document.getElementById('stageText').classList.add('visible');
+    document.getElementById('stageLabel').classList.add('visible');
+    sections.forEach(s => s.classList.add('has-border'));
+    labels.forEach(l => l.classList.add('visible'));
+    eduItems.forEach(e => e.classList.add('has-border'));
+    pubItems.forEach(p => p.classList.add('has-border'));
+    reveal('bonus-funfact');
+  }
+
+  // Stage 2: Colleague — warmth, card styles
+  if (stage >= 2) {
+    cards.forEach(c => c.classList.add('styled'));
+    tags.forEach(t => t.classList.add('colored'));
+    categories.forEach(c => c.classList.add('visible'));
+    focusItems.forEach(f => f.classList.add('has-dot'));
+    document.getElementById('customizeBtn').classList.add('visible');
+    reveal('bonus-lab');
+    reveal('bonus-projects');
+  }
+
+  // Stage 3: Collaborator — particles, breathing, game
+  if (stage >= 3) {
+    document.getElementById('particles').classList.add('visible');
+    document.getElementById('breathing').classList.add('visible');
+    document.getElementById('minigameSection').classList.add('visible');
+    // Reveal plain English on publications
+    if (DATA) {
+      DATA.publications.forEach((p, i) => {
+        const el = document.getElementById('pubplain-' + i);
+        if (el) el.classList.add('revealed');
+      });
+    }
+    reveal('bonus-pubs');
+    reveal('bonus-contact');
+  }
+}
+
+function reveal(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('revealed');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ============================================
+   SCROLL TRACKING & MINDFUL DETECTION
+   ============================================ */
+function onScroll() {
+  const sy = window.scrollY;
+  const delta = Math.abs(sy - lastScrollY);
+
+  if (delta > 5) {
+    // Mindful scroll detection
+    scrollSpeedSamples.push(delta);
+    if (scrollSpeedSamples.length > 10) scrollSpeedSamples.shift();
+    const avgSpeed = scrollSpeedSamples.reduce((a,b) => a+b, 0) / scrollSpeedSamples.length;
+
+    // Slow reading = more points, more particles
+    let multiplier = 1;
+    if (avgSpeed < 15) {
+      multiplier = 1.5; // Mindful reading bonus
+      document.getElementById('particles').style.opacity = stage >= 3 ? '1' : '0';
+    } else if (avgSpeed > 60) {
+      multiplier = 0.5; // Rushing penalty
+      if (stage >= 3) document.getElementById('particles').style.opacity = '0.3';
+    }
+
+    earnPoints(Math.min(delta * 0.08 * multiplier, 2));
+    lastScrollY = sy;
+  }
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+
+// Slow idle generation
+setInterval(() => { earnPoints(0.15); }, 1000);
+
+/* ============================================
+   CARD INTERACTIONS
+   ============================================ */
+function toggleCard(idx) {
+  const detail = document.getElementById('pcdet-' + idx);
+  const card = document.querySelector('[data-idx="' + idx + '"]');
+  if (!detail || !card) return;
+
+  const wasOpen = detail.classList.contains('open');
+  detail.classList.toggle('open');
+  card.classList.toggle('expanded');
+
+  if (!wasOpen && !cardClicked.has(idx)) {
+    cardClicked.add(idx);
+    earnPoints(12);
+    showToast('Project details revealed');
+  }
+}
+
+/* ============================================
+   THEME SYSTEM
+   ============================================ */
+let currentTheme = 'maroon'; // Default once available
+
+function initThemes() {
+  const container = document.getElementById('themeOptions');
+  themes.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'theme-option' + (t.id === currentTheme ? ' active' : '');
+    div.setAttribute('data-theme', t.id);
+    div.onclick = () => applyTheme(t.id);
+    div.innerHTML = '<div class="theme-swatch" style="background:' + t.color + '"></div><div><div class="theme-name">' + t.name + '</div><div class="theme-desc">' + t.desc + '</div></div>';
+    container.appendChild(div);
+  });
+  applyTheme(currentTheme);
+}
+
+function applyTheme(id) {
+  const t = themes.find(x => x.id === id);
+  if (!t) return;
+  currentTheme = id;
+
+  document.documentElement.style.setProperty('--accent', t.color);
+  document.documentElement.style.setProperty('--accent-soft', t.soft);
+  document.documentElement.style.setProperty('--accent-border', t.border);
+  document.documentElement.style.setProperty('--accent-text', t.text);
+
+  document.querySelectorAll('.theme-option').forEach(o => {
+    o.classList.toggle('active', o.getAttribute('data-theme') === id);
+  });
+
+  // Re-apply current stage visuals
+  applyStage();
+}
+
+let panelOpen = false;
+function togglePanel() {
+  panelOpen = !panelOpen;
+  document.getElementById('customizePanel').classList.toggle('open', panelOpen);
+}
+
+/* ============================================
+   SORTING MINI-GAME
+   ============================================ */
+const gameData = {
+  buckets: ['Health & Therapy', 'Game Production', 'Academic Research'],
+  tiles: [
+    { text: 'Eye Rehab', bucket: 0 },
+    { text: 'Emotion Adventure', bucket: 0 },
+    { text: 'Digital Therapeutics', bucket: 0 },
+    { text: 'ASD Social Skills', bucket: 0 },
+    { text: 'Fortnite', bucket: 1 },
+    { text: 'Burnt Onion Studio', bucket: 1 },
+    { text: 'Scrum & Standups', bucket: 1 },
+    { text: 'Playtesting', bucket: 1 },
+    { text: 'CHI PLAY', bucket: 2 },
+    { text: 'Meaningful Play', bucket: 2 },
+    { text: 'IEEE GEM', bucket: 2 },
+    { text: 'Neural Networks', bucket: 2 }
+  ]
+};
+
+let placedCount = 0;
+
+function initSortGame() {
+  const pool = document.getElementById('sortPool');
+  const game = document.getElementById('sortGame');
+
+  // Shuffle tiles
+  const shuffled = [...gameData.tiles].sort(() => Math.random() - 0.5);
+
+  shuffled.forEach((tile, i) => {
+    const el = document.createElement('div');
+    el.className = 'sort-tile';
+    el.textContent = tile.text;
+    el.draggable = true;
+    el.setAttribute('data-bucket', tile.bucket);
+    el.setAttribute('data-id', i);
+    el.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', i + '|' + tile.bucket);
+      el.style.opacity = '0.5';
+    });
+    el.addEventListener('dragend', () => { el.style.opacity = '1'; });
+
+    // Touch support
+    el.addEventListener('click', () => {
+      if (el.classList.contains('placed')) return;
+      // On click, find the correct bucket and place it
+      const bucketIdx = parseInt(el.getAttribute('data-bucket'));
+      const bucketEl = document.querySelector('[data-bucket-idx="' + bucketIdx + '"]');
+      placeTile(el, bucketEl);
+    });
+
+    pool.appendChild(el);
+  });
+
+  // Create buckets
+  gameData.buckets.forEach((name, i) => {
+    const bucket = document.createElement('div');
+    bucket.className = 'sort-bucket';
+    bucket.setAttribute('data-bucket-idx', i);
+    bucket.innerHTML = '<div class="bucket-label">' + name + '</div>';
+
+    bucket.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      bucket.classList.add('drag-over');
+    });
+    bucket.addEventListener('dragleave', () => {
+      bucket.classList.remove('drag-over');
+    });
+    bucket.addEventListener('drop', (e) => {
+      e.preventDefault();
+      bucket.classList.remove('drag-over');
+      const data = e.dataTransfer.getData('text/plain').split('|');
+      const tileId = parseInt(data[0]);
+      const correctBucket = parseInt(data[1]);
+      const tileEl = document.querySelector('[data-id="' + tileId + '"]');
+      if (i === correctBucket) {
+        placeTile(tileEl, bucket);
+      } else {
+        tileEl.classList.add('wrong');
+        setTimeout(() => tileEl.classList.remove('wrong'), 400);
+      }
+    });
+
+    game.appendChild(bucket);
+  });
+}
+
+function placeTile(tileEl, bucketEl) {
+  if (!tileEl || !bucketEl || tileEl.classList.contains('placed')) return;
+  tileEl.classList.add('placed');
+  tileEl.draggable = false;
+  bucketEl.appendChild(tileEl);
+  placedCount++;
+  earnPoints(3);
+
+  if (placedCount >= gameData.tiles.length) {
+    document.getElementById('gameComplete').classList.add('show');
+    earnPoints(20);
+    showToast('Everything in its place');
+  }
+}
+
+/* ============================================
+   PARTICLES
+   ============================================ */
+function createParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 2 + Math.random() * 4;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.bottom = -(Math.random() * 20) + '%';
+    p.style.background = 'var(--accent)';
+    p.style.opacity = '0';
+    p.style.animationDuration = (10 + Math.random() * 15) + 's';
+    p.style.animationDelay = Math.random() * 10 + 's';
+    container.appendChild(p);
+  }
+}
+
+/* ============================================
+   INIT
+   ============================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  createParticles();
+  initThemes();
+  loadData();
+});
+</script>
+
+</body>
+</html>
