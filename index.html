@@ -335,6 +335,37 @@ main {
   color: var(--text-tertiary);
 }
 
+/* --- EXPERIENCE --- */
+.exp-item {
+  padding: 14px 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color 1.2s ease;
+}
+
+.exp-item.has-border { border-bottom-color: var(--border); }
+.exp-item:last-child { border-bottom: none; }
+
+.exp-title { font-size: 15px; font-weight: 500; }
+
+.exp-org {
+  font-size: 13px;
+  color: var(--accent-text);
+  font-family: var(--mono);
+}
+
+.exp-period {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.exp-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
 /* --- LAB FOCUS --- */
 .focus-list {
   margin-top: 12px;
@@ -454,6 +485,33 @@ main {
 }
 
 .pc-link:hover { text-decoration: underline; }
+
+.pc-thumb {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.pc-thumb.loaded {
+  display: block;
+  opacity: 1;
+}
+
+.pc-video {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--accent-text);
+  text-decoration: none;
+  font-family: var(--mono);
+}
+
+.pc-video:hover { text-decoration: underline; }
 
 /* --- PUBLICATIONS --- */
 .pub-list {
@@ -844,6 +902,7 @@ footer a:hover { text-decoration: underline; }
 <!-- Nav -->
 <nav id="nav">
   <a href="#about">About</a>
+  <a href="#experience">Experience</a>
   <a href="#lab">Lab</a>
   <a href="#projects">Projects</a>
   <a href="#publications">Publications</a>
@@ -882,12 +941,20 @@ footer a:hover { text-decoration: underline; }
     </div>
   </section>
 
+  <!-- EXPERIENCE -->
+  <section class="section" id="experience">
+    <div class="section-label" id="label-experience">Industry experience</div>
+    <div class="section-title">Experience</div>
+    <div id="experienceList"></div>
+  </section>
+
   <!-- LAB -->
   <section class="section" id="lab">
     <div class="section-label" id="label-lab">Research lab</div>
     <div class="section-title" id="labName"></div>
     <div class="section-body" id="labDesc"></div>
     <div class="focus-list" id="focusList"></div>
+    <div class="project-grid" id="labProjectGrid" style="margin-top:20px;"></div>
     <div class="bonus" id="bonus-lab">
       <div class="bonus-label">Open call</div>
       <div class="bonus-text" id="labOpenCall"></div>
@@ -1017,6 +1084,36 @@ function render() {
     focusEl.appendChild(div);
   });
 
+  // Lab Projects
+  if (d.lab.projects && d.lab.projects.length > 0) {
+    const labGrid = document.getElementById('labProjectGrid');
+    d.lab.projects.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'project-card';
+      let html = '';
+      if (p.image) html += '<img class="pc-thumb loaded" src="' + p.image + '" alt="' + p.title + '">';
+      html += '<div class="pc-title">' + p.title + '</div>';
+      html += '<div class="pc-org">' + p.description + '</div>';
+      if (p.status === 'upcoming') html += '<div style="font-size:11px;color:var(--text-tertiary);margin-top:4px;font-style:italic;">Coming soon</div>';
+      card.innerHTML = html;
+      labGrid.appendChild(card);
+    });
+  }
+
+  // Experience
+  if (d.experience && d.experience.length > 0) {
+    const expEl = document.getElementById('experienceList');
+    d.experience.forEach(e => {
+      const div = document.createElement('div');
+      div.className = 'exp-item';
+      div.innerHTML = '<div class="exp-title">' + e.title + '</div>' +
+        '<div class="exp-org">' + e.org + '</div>' +
+        '<div class="exp-period">' + e.period + '</div>' +
+        '<div class="exp-desc">' + e.description + '</div>';
+      expEl.appendChild(div);
+    });
+  }
+
   // Projects
   const gridEl = document.getElementById('projectGrid');
   d.projects.forEach((p, i) => {
@@ -1024,10 +1121,15 @@ function render() {
     card.className = 'project-card';
     card.setAttribute('data-idx', i);
     card.onclick = () => toggleCard(i);
-    let html = '<div class="pc-category">' + p.category + '</div>';
+    let html = '';
+    if (p.image) html += '<img class="pc-thumb loaded" src="' + p.image + '" alt="' + p.title + '">';
+    html += '<div class="pc-category">' + p.category + '</div>';
     html += '<div class="pc-title">' + p.title + '</div>';
     html += '<div class="pc-org">' + p.org + ' — ' + p.role + '</div>';
     html += '<div class="pc-detail" id="pcdet-' + i + '">' + p.detail;
+    if (p.video) {
+      html += '<br><a class="pc-video" href="' + p.video + '" target="_blank" onclick="event.stopPropagation();earnPoints(5);">Watch video &rarr;</a>';
+    }
     if (p.link) {
       html += '<br><a class="pc-link" href="' + p.link + '" target="_blank" onclick="event.stopPropagation();earnPoints(5);">View project &rarr;</a>';
     }
@@ -1133,6 +1235,7 @@ function applyStage() {
   const pubItems = document.querySelectorAll('.pub-item');
   const focusItems = document.querySelectorAll('.focus-item');
   const categories = document.querySelectorAll('.pc-category');
+  const expItems = document.querySelectorAll('.exp-item');
 
   // Stage 1: Acquaintance — lines & labels
   if (stage >= 1) {
@@ -1144,6 +1247,7 @@ function applyStage() {
     labels.forEach(l => l.classList.add('visible'));
     eduItems.forEach(e => e.classList.add('has-border'));
     pubItems.forEach(p => p.classList.add('has-border'));
+    expItems.forEach(e => e.classList.add('has-border'));
     reveal('bonus-funfact');
   }
 
